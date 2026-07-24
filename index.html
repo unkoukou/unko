@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加藤純一（うんこちゃん） Portal Hub</title>
+    <title>加藤純一ロードショー - 最新動画自動まとめ</title>
     <style>
         * {
             box-sizing: border-box;
@@ -17,86 +17,64 @@
             line-height: 1.6;
         }
         header {
-            background: linear-gradient(135deg, #9146FF, #FF0000, #1DA1F2);
-            padding: 3rem 1.5rem;
+            background: linear-gradient(135deg, #FF0000, #9146FF);
+            padding: 2.5rem 1rem;
             text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
         header h1 {
-            font-size: 2.8rem;
-            margin-bottom: 0.7rem;
-            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
         header p {
-            font-size: 1.1rem;
+            font-size: 1rem;
             opacity: 0.9;
-            font-weight: bold;
         }
         .container {
-            max-width: 1200px;
-            margin: 3rem auto;
-            padding: 0 1.5rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
-        .card {
-            background-color: #1a1a24;
-            border-radius: 16px;
-            padding: 2rem;
-            border: 1px solid #333;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        .section-title {
+            font-size: 1.5rem;
+            color: #FF0000;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #FF0000;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #aaa;
+        }
+        .video-list {
             display: flex;
             flex-direction: column;
+            gap: 2rem;
         }
-        .card h2 {
-            font-size: 1.6rem;
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.6rem;
-            border-bottom: 3px solid #333;
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-        }
-        .twitch-color { color: #9146FF; border-color: #9146FF !important; }
-        .youtube-color { color: #FF0000; border-color: #FF0000 !important; }
-        .x-color { color: #1DA1F2; border-color: #1DA1F2 !important; }
-        .card p.desc {
-            margin-bottom: 1.2rem;
-            font-size: 0.95rem;
-            color: #ccc;
-        }
-        .btn {
-            display: block;
-            width: 100%;
+        .video-card {
+            background-color: #1a1a24;
+            border-radius: 12px;
             padding: 1rem;
-            margin-top: auto; /* ボタンを常にカード下部に */
-            text-align: center;
-            text-decoration: none;
+            border: 1px solid #2d2d3a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .video-title {
             font-weight: bold;
             font-size: 1.1rem;
-            border-radius: 10px;
+            margin-bottom: 0.8rem;
             color: #fff;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        .btn:hover {
-            opacity: 0.85;
-            transform: translateY(-2px);
-        }
-        .btn-twitch { background-color: #9146FF; }
-        .btn-youtube { background-color: #FF0000; }
-        .btn-x { background-color: #000; border: 1px solid #444; }
         .embed-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
-            max-width: 100%;
-            border-radius: 10px;
+            border-radius: 8px;
             background: #000;
-            margin-bottom: 1.5rem;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
         }
         .embed-container iframe {
             position: absolute;
@@ -106,79 +84,81 @@
             height: 100%;
             border: 0;
         }
-        .notice-box {
-            background-color: #0c0c10;
-            border: 1px solid #2d2d3a;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: #aaa;
-            font-size: 0.9rem;
-        }
         footer {
             text-align: center;
-            padding: 3rem;
+            padding: 2rem;
             color: #777;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             border-top: 1px solid #222;
-            margin-top: 4rem;
+            margin-top: 3rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>加藤純一（うんこちゃん） Portal</h1>
-        <p>Twitch / YouTube / X（旧Twitter）最新情報まとめ</p>
+        <h1>加藤純一ロードショー</h1>
+        <p>最新動画10選（自動更新）</p>
     </header>
 
     <div class="container">
-        
-        <!-- Twitch セクション -->
-        <div class="card">
-            <h2 class="twitch-color">🎮 Twitch（生配信）</h2>
-            <p class="desc">メインの生配信プラットフォーム。配信中はプレビューが表示されます。</p>
-            <div class="embed-container">
-                <!-- 修正ポイント: parent属性に公開ドメインを追加 -->
-                <iframe 
-                    src="https://player.twitch.tv/?channel=kato_junichi0817&parent=unkoukou.github.io&parent=github.io&parent=localhost" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-            <a href="https://www.twitch.tv/kato_junichi0817" target="_blank" class="btn btn-twitch">Twitch チャンネルを開く</a>
-        </div>
+        <h2 class="section-title">📺 最新動画 10選</h2>
 
-        <!-- YouTube セクション -->
-        <div class="card">
-            <h2 class="youtube-color">📺 YouTube</h2>
-            <p class="desc">公式チャンネル・動画アーカイブ。最新動画やアーカイブ動画の一覧。</p>
-            <!-- 修正ポイント: 表示不安定なリスト埋め込みを廃止し、より確実にアクセスできる案内を追加 -->
-            <div class="notice-box">
-                <p style="color:#FF0000; font-weight:bold; font-size:1.2rem; margin-bottom:0.5rem;">🎬 最新動画をチェック</p>
-                <p>チャンネルホームで最新の動画リストを<br>直接確認してください。</p>
-            </div>
-            <a href="https://www.youtube.com/@unkchan123" target="_blank" class="btn btn-youtube">YouTube チャンネルを開く</a>
-        </div>
-
-        <!-- X (Twitter) セクション -->
-        <div class="card">
-            <h2 class="x-color">𝕏 X（旧Twitter）</h2>
-            <p class="desc">最新のポスト・お知らせ。Xにログインしていないと表示されない場合があります。</p>
-            <!-- 修正ポイント: 高さを固定し、安定した読み込みを促す記述 -->
-            <div style="height: 400px; overflow-y: auto; margin-bottom: 1.5rem; border-radius:10px;">
-                <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders" href="https://twitter.com/unkochan123456?ref_src=twsrc%5Etfw">Tweets by unkochan123456</a> 
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-            </div>
-            <a href="https://x.com/unkochan123456" target="_blank" class="btn btn-x">X アカウントを開く</a>
-        </div>
-
+        <div id="loading" class="loading">最新動画を読み込み中...</div>
+        <div class="video-list" id="videoContainer"></div>
     </div>
 
     <footer>
         <p>※当サイトは個人が制作した非公式ファンサイトです。</p>
-        <p>※各SNSの表示は、各プラットフォームの仕様やログイン状態に依存します。</p>
     </footer>
+
+    <script>
+        // 加藤純一ロードショーのチャンネルID (UCd4f409U0eD17qR4vWpUInA) のRSSフィードを取得
+        const channelId = 'UCd4f409U0eD17qR4vWpUInA';
+        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+        
+        // CORS回避用API経由でRSS(XML)を取得
+        const fetchUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+        fetch(fetchUrl)
+            .then(response => response.json())
+            .then(data => {
+                const loading = document.getElementById('loading');
+                const container = document.getElementById('videoContainer');
+                loading.style.display = 'none';
+
+                if (data.status === 'ok' && data.items) {
+                    // 最新の10件を取得
+                    const items = data.items.slice(0, 10);
+                    
+                    items.forEach(item => {
+                        // URLから動画ID(v=xxxx)を抽出
+                        const videoId = item.link.split('v=')[1];
+                        
+                        const card = document.createElement('div');
+                        card.className = 'video-card';
+                        card.innerHTML = `
+                            <div class="video-title">${item.title}</div>
+                            <div class="embed-container">
+                                <iframe 
+                                    src="https://www.youtube.com/embed/${videoId}" 
+                                    title="${item.title}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                } else {
+                    container.innerHTML = '<p style="text-align:center;">動画の読み込みに失敗しました。</p>';
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById('loading').innerText = '動画の取得中にエラーが発生しました。';
+            });
+    </script>
 
 </body>
 </html>
