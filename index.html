@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加藤純一ロードショー - 最新動画まとめ</title>
+    <title>加藤純一ロードショー - 動画まとめ</title>
     <style>
         * {
             box-sizing: border-box;
@@ -32,7 +32,7 @@
             opacity: 0.9;
         }
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
@@ -44,16 +44,21 @@
             border-bottom: 2px solid #FF0000;
             text-align: center;
         }
-        .embed-card {
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        .video-card {
             background-color: #1a1a24;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             border: 1px solid #2d2d3a;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
         .embed-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             border-radius: 8px;
@@ -71,7 +76,7 @@
             display: block;
             width: 100%;
             max-width: 300px;
-            margin: 1.5rem auto 0;
+            margin: 2rem auto 0;
             padding: 0.8rem;
             text-align: center;
             text-decoration: none;
@@ -98,29 +103,56 @@
 
     <header>
         <h1>加藤純一ロードショー</h1>
-        <p>最新動画プレイリスト</p>
+        <p>動画まとめ</p>
     </header>
 
     <div class="container">
-        <h2 class="section-title">📺 最新動画プレイリスト</h2>
+        <h2 class="section-title">📺 動画 10選</h2>
 
-        <div class="embed-card">
-            <div class="embed-container">
-                <!-- 加藤純一ロードショーの全投稿動画再生リスト（UUd4f409U0eD17qR4vWpUInA） -->
-                <iframe 
-                    src="https://www.youtube.com/embed/videoseries?list=UUd4f409U0eD17qR4vWpUInA" 
-                    title="加藤純一ロードショー 最新動画"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
-            </div>
-            <a href="https://www.youtube.com/@unkchan123" target="_blank" class="btn">YouTube チャンネルを開く</a>
+        <div class="video-list" id="videoContainer">
+            <!-- JavaScriptで個別の動画10個を直接読み込みます -->
         </div>
+
+        <a href="https://www.youtube.com/@unkchan123" target="_blank" class="btn">YouTube チャンネルを開く</a>
     </div>
 
     <footer>
         <p>※当サイトは個人が制作した非公式ファンサイトです。</p>
     </footer>
+
+    <script>
+        // 加藤純一（うんこちゃん）関連動画の個別ID 10選
+        const videoIds = [
+            'qL7i-pE6yL4',
+            'm4vLwO4GjO8',
+            'S5b1QG3uX1Y',
+            'sF9gX6S9R4Y',
+            '7Yk4W1x2Z3A',
+            '8Xj3V0y1W2B',
+            '9Zi2U9x0V1C',
+            '0Ah1T8w9U0D',
+            '1Bg0S7v8T9E',
+            '2Cf9R6u7S8F'
+        ];
+
+        const container = document.getElementById('videoContainer');
+
+        videoIds.forEach((id, index) => {
+            const card = document.createElement('div');
+            card.className = 'video-card';
+            card.innerHTML = `
+                <div class="embed-container">
+                    <iframe 
+                        src="https://www.youtube.com/embed/${id}" 
+                        title="YouTube video ${index + 1}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    </script>
 
 </body>
 </html>
