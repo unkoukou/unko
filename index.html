@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加藤純一ロードショー - 最新動画自動まとめ</title>
+    <title>加藤純一ロードショー - 最新動画まとめ</title>
     <style>
         * {
             box-sizing: border-box;
@@ -32,7 +32,7 @@
             opacity: 0.9;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 2rem auto;
             padding: 0 1rem;
         }
@@ -44,33 +44,16 @@
             border-bottom: 2px solid #FF0000;
             text-align: center;
         }
-        .loading {
-            text-align: center;
-            padding: 3rem;
-            font-size: 1.2rem;
-            color: #aaa;
-        }
-        .video-list {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-        .video-card {
+        .embed-card {
             background-color: #1a1a24;
             border-radius: 12px;
-            padding: 1.2rem;
+            padding: 1.5rem;
             border: 1px solid #2d2d3a;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
-        .video-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-            margin-bottom: 0.8rem;
-            color: #fff;
-        }
         .embed-container {
             position: relative;
-            padding-bottom: 56.25%;
+            padding-bottom: 56.25%; /* 16:9 */
             height: 0;
             overflow: hidden;
             border-radius: 8px;
@@ -83,6 +66,23 @@
             width: 100%;
             height: 100%;
             border: 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 1.5rem auto 0;
+            padding: 0.8rem;
+            text-align: center;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 8px;
+            background-color: #FF0000;
+            color: #fff;
+            transition: opacity 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.85;
         }
         footer {
             text-align: center;
@@ -98,102 +98,29 @@
 
     <header>
         <h1>加藤純一ロードショー</h1>
-        <p>最新動画 10選（自動更新）</p>
+        <p>最新動画プレイリスト</p>
     </header>
 
     <div class="container">
-        <h2 class="section-title">📺 最新動画 10選</h2>
+        <h2 class="section-title">📺 最新動画プレイリスト</h2>
 
-        <div id="loading" class="loading">最新動画を取得中...</div>
-        <div class="video-list" id="videoContainer"></div>
+        <div class="embed-card">
+            <div class="embed-container">
+                <!-- 加藤純一ロードショーの全投稿動画再生リスト（UUd4f409U0eD17qR4vWpUInA） -->
+                <iframe 
+                    src="https://www.youtube.com/embed/videoseries?list=UUd4f409U0eD17qR4vWpUInA" 
+                    title="加藤純一ロードショー 最新動画"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <a href="https://www.youtube.com/@unkchan123" target="_blank" class="btn">YouTube チャンネルを開く</a>
+        </div>
     </div>
 
     <footer>
         <p>※当サイトは個人が制作した非公式ファンサイトです。</p>
     </footer>
-
-    <script>
-        const channelId = 'UCd4f409U0eD17qR4vWpUInA';
-        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-
-        // 複数の取得ルート（プロキシ）を用意
-        const proxies = [
-            url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
-            url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
-            url => `https://corsproxy.io/?${encodeURIComponent(url)}`
-        ];
-
-        async function fetchVideos() {
-            const loading = document.getElementById('loading');
-            const container = document.getElementById('videoContainer');
-
-            for (let i = 0; i < proxies.length; i++) {
-                try {
-                    const endpoint = proxies[i](rssUrl);
-                    const res = await fetch(endpoint);
-                    
-                    if (!res.ok) continue;
-
-                    let videos = [];
-
-                    // rss2json (1番目のルート) の場合の処理
-                    if (i === 0) {
-                        const data = await res.json();
-                        if (data.status === 'ok' && data.items) {
-                            videos = data.items.slice(0, 10).map(item => ({
-                                title: item.title,
-                                id: item.link.split('v=')[1]
-                            }));
-                        }
-                    } else {
-                        // XML直取得 (2番目・3番目のルート) の場合の処理
-                        const xmlText = await res.text();
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-                        const entries = Array.from(xmlDoc.getElementsByTagName("entry")).slice(0, 10);
-
-                        videos = entries.map(entry => ({
-                            title: entry.getElementsByTagName("title")[0]?.textContent || '',
-                            id: entry.getElementsByTagName("yt:videoId")[0]?.textContent || ''
-                        }));
-                    }
-
-                    if (videos.length > 0) {
-                        loading.style.display = 'none';
-                        renderVideos(videos);
-                        return; // 取得成功したら終了
-                    }
-                } catch (e) {
-                    console.warn(`ルート ${i + 1} 失敗:`, e);
-                }
-            }
-
-            loading.innerText = '動画の自動読み込みに失敗しました。時間をおいて再読み込みしてください。';
-        }
-
-        function renderVideos(videos) {
-            const container = document.getElementById('videoContainer');
-            videos.forEach(video => {
-                if (!video.id) return;
-                const card = document.createElement('div');
-                card.className = 'video-card';
-                card.innerHTML = `
-                    <div class="video-title">${video.title}</div>
-                    <div class="embed-container">
-                        <iframe 
-                            src="https://www.youtube.com/embed/${video.id}" 
-                            title="${video.title}"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                        </iframe>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        fetchVideos();
-    </script>
 
 </body>
 </html>
