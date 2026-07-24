@@ -18,70 +18,85 @@
         }
         header {
             background: linear-gradient(135deg, #9146FF, #FF0000, #1DA1F2);
-            padding: 2.5rem 1rem;
+            padding: 3rem 1.5rem;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
         }
         header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            font-size: 2.8rem;
+            margin-bottom: 0.7rem;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.9);
         }
         header p {
-            font-size: 1rem;
+            font-size: 1.1rem;
             opacity: 0.9;
+            font-weight: bold;
         }
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
         }
         .card {
             background-color: #1a1a24;
-            border-radius: 12px;
-            padding: 1.5rem;
-            border: 1px solid #2d2d3a;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid #333;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
         }
         .card h2 {
-            font-size: 1.4rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #333;
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 3px solid #333;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.7rem;
         }
         .twitch-color { color: #9146FF; border-color: #9146FF !important; }
         .youtube-color { color: #FF0000; border-color: #FF0000 !important; }
         .x-color { color: #1DA1F2; border-color: #1DA1F2 !important; }
+        .card p.desc {
+            margin-bottom: 1.2rem;
+            font-size: 0.95rem;
+            color: #ccc;
+        }
         .btn {
             display: block;
             width: 100%;
-            padding: 0.8rem;
-            margin-top: 1rem;
+            padding: 1rem;
+            margin-top: auto; /* ボタンを常にカード下部に */
             text-align: center;
             text-decoration: none;
             font-weight: bold;
-            border-radius: 8px;
+            font-size: 1.1rem;
+            border-radius: 10px;
             color: #fff;
-            transition: opacity 0.2s;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
-        .btn:hover { opacity: 0.8; }
+        .btn:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
         .btn-twitch { background-color: #9146FF; }
         .btn-youtube { background-color: #FF0000; }
-        .btn-x { background-color: #000; border: 1px solid #333; }
+        .btn-x { background-color: #000; border: 1px solid #444; }
         .embed-container {
             position: relative;
             padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             max-width: 100%;
-            border-radius: 8px;
+            border-radius: 10px;
             background: #000;
+            margin-bottom: 1.5rem;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
         }
         .embed-container iframe {
             position: absolute;
@@ -91,13 +106,23 @@
             height: 100%;
             border: 0;
         }
+        .notice-box {
+            background-color: #0c0c10;
+            border: 1px solid #2d2d3a;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
         footer {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem;
             color: #777;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             border-top: 1px solid #222;
-            margin-top: 3rem;
+            margin-top: 4rem;
         }
     </style>
 </head>
@@ -105,7 +130,7 @@
 
     <header>
         <h1>加藤純一（うんこちゃん） Portal</h1>
-        <p>Twitch / YouTube / X（旧Twitter）情報まとめ</p>
+        <p>Twitch / YouTube / X（旧Twitter）最新情報まとめ</p>
     </header>
 
     <div class="container">
@@ -113,10 +138,11 @@
         <!-- Twitch セクション -->
         <div class="card">
             <h2 class="twitch-color">🎮 Twitch（生配信）</h2>
-            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #aaa;">メインの生配信プラットフォーム</p>
+            <p class="desc">メインの生配信プラットフォーム。配信中はプレビューが表示されます。</p>
             <div class="embed-container">
+                <!-- 修正ポイント: parent属性に公開ドメインを追加 -->
                 <iframe 
-                    src="https://player.twitch.tv/?channel=kato_junichi0817&parent=localhost&parent=github.io" 
+                    src="https://player.twitch.tv/?channel=kato_junichi0817&parent=unkoukou.github.io&parent=github.io&parent=localhost" 
                     allowfullscreen>
                 </iframe>
             </div>
@@ -126,12 +152,11 @@
         <!-- YouTube セクション -->
         <div class="card">
             <h2 class="youtube-color">📺 YouTube</h2>
-            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #aaa;">公式チャンネル・動画アーカイブ</p>
-            <div class="embed-container">
-                <iframe 
-                    src="https://www.youtube.com/embed?listType=playlist&list=UU02L182IipK3R_yX2Q0yA5g" 
-                    allowfullscreen>
-                </iframe>
+            <p class="desc">公式チャンネル・動画アーカイブ。最新動画やアーカイブ動画の一覧。</p>
+            <!-- 修正ポイント: 表示不安定なリスト埋め込みを廃止し、より確実にアクセスできる案内を追加 -->
+            <div class="notice-box">
+                <p style="color:#FF0000; font-weight:bold; font-size:1.2rem; margin-bottom:0.5rem;">🎬 最新動画をチェック</p>
+                <p>チャンネルホームで最新の動画リストを<br>直接確認してください。</p>
             </div>
             <a href="https://www.youtube.com/@unkchan123" target="_blank" class="btn btn-youtube">YouTube チャンネルを開く</a>
         </div>
@@ -139,9 +164,10 @@
         <!-- X (Twitter) セクション -->
         <div class="card">
             <h2 class="x-color">𝕏 X（旧Twitter）</h2>
-            <p style="margin-bottom: 1rem; font-size: 0.9rem; color: #aaa;">最新のポスト・お知らせ</p>
-            <div style="max-height: 400px; overflow-y: auto;">
-                <a class="twitter-timeline" data-theme="dark" href="https://twitter.com/unkochan123456?ref_src=twsrc%5Etfw">Tweets by unkochan123456</a> 
+            <p class="desc">最新のポスト・お知らせ。Xにログインしていないと表示されない場合があります。</p>
+            <!-- 修正ポイント: 高さを固定し、安定した読み込みを促す記述 -->
+            <div style="height: 400px; overflow-y: auto; margin-bottom: 1.5rem; border-radius:10px;">
+                <a class="twitter-timeline" data-theme="dark" data-chrome="noheader nofooter noborders" href="https://twitter.com/unkochan123456?ref_src=twsrc%5Etfw">Tweets by unkochan123456</a> 
                 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
             </div>
             <a href="https://x.com/unkochan123456" target="_blank" class="btn btn-x">X アカウントを開く</a>
@@ -150,7 +176,8 @@
     </div>
 
     <footer>
-        <p>※当サイトはファンが制作したポータルサイトです。</p>
+        <p>※当サイトは個人が制作した非公式ファンサイトです。</p>
+        <p>※各SNSの表示は、各プラットフォームの仕様やログイン状態に依存します。</p>
     </footer>
 
 </body>
