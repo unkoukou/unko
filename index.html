@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>加藤純一ロードショー - 動画まとめ</title>
+    <title>加藤純一ロードショー - 最新動画自動まとめ</title>
     <style>
         * {
             box-sizing: border-box;
@@ -44,6 +44,12 @@
             border-bottom: 2px solid #FF0000;
             text-align: center;
         }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #aaa;
+        }
         .video-list {
             display: flex;
             flex-direction: column;
@@ -55,6 +61,12 @@
             padding: 1.2rem;
             border: 1px solid #2d2d3a;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+        .video-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            color: #fff;
         }
         .embed-container {
             position: relative;
@@ -103,17 +115,16 @@
 
     <header>
         <h1>加藤純一ロードショー</h1>
-        <p>動画まとめ</p>
+        <p>最新動画 10選（自動更新）</p>
     </header>
 
     <div class="container">
-        <h2 class="section-title">📺 動画 10選</h2>
+        <h2 class="section-title">📺 最新動画 10選</h2>
 
-        <div class="video-list" id="videoContainer">
-            <!-- JavaScriptで個別の動画10個を直接読み込みます -->
-        </div>
+        <div id="loading" class="loading">最新動画を取得中...</div>
+        <div class="video-list" id="videoContainer"></div>
 
-        <a href="https://www.youtube.com/@unkchan123" target="_blank" class="btn">YouTube チャンネルを開く</a>
+        <a href="https://www.youtube.com/@junroadshow" target="_blank" class="btn">YouTube チャンネルを開く</a>
     </div>
 
     <footer>
@@ -121,37 +132,50 @@
     </footer>
 
     <script>
-        // 加藤純一（うんこちゃん）関連動画の個別ID 10選
-        const videoIds = [
-            'qL7i-pE6yL4',
-            'm4vLwO4GjO8',
-            'S5b1QG3uX1Y',
-            'sF9gX6S9R4Y',
-            '7Yk4W1x2Z3A',
-            '8Xj3V0y1W2B',
-            '9Zi2U9x0V1C',
-            '0Ah1T8w9U0D',
-            '1Bg0S7v8T9E',
-            '2Cf9R6u7S8F'
-        ];
+        // 正確な加藤純一ロードショーのチャンネルID
+        const channelId = 'UCZetZElUvdElPrcstRjl9DA';
+        const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
 
-        const container = document.getElementById('videoContainer');
+        // 信頼性の高いプロキシAPIを経由してRSSを取得
+        const fetchUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
 
-        videoIds.forEach((id, index) => {
-            const card = document.createElement('div');
-            card.className = 'video-card';
-            card.innerHTML = `
-                <div class="embed-container">
-                    <iframe 
-                        src="https://www.youtube.com/embed/${id}" 
-                        title="YouTube video ${index + 1}"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            `;
-            container.appendChild(card);
-        });
+        fetch(fetchUrl)
+            .then(res => res.json())
+            .then(data => {
+                const loading = document.getElementById('loading');
+                const container = document.getElementById('videoContainer');
+                loading.style.display = 'none';
+
+                if (data.status === 'ok' && data.items) {
+                    const items = data.items.slice(0, 10);
+                    items.forEach(item => {
+                        // URLからvideoIDを抽出
+                        const videoId = item.link.split('v=')[1]?.split('&')[0];
+                        if (!videoId) return;
+
+                        const card = document.createElement('div');
+                        card.className = 'video-card';
+                        card.innerHTML = `
+                            <div class="video-title">${item.title}</div>
+                            <div class="embed-container">
+                                <iframe 
+                                    src="https://www.youtube.com/embed/${videoId}" 
+                                    title="${item.title}"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                                </iframe>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                } else {
+                    loading.innerText = '動画の読み込みに失敗しました。';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('loading').innerText = '通信エラーが発生しました。';
+            });
     </script>
 
 </body>
