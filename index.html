@@ -113,52 +113,86 @@
     </footer>
 
     <script>
-        // 加藤純一ロードショーのRSSフィードURL
         const channelId = 'UCd4f409U0eD17qR4vWpUInA';
         const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-        
-        // CORS回避用プロキシ
-        const fetchUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
 
-        fetch(fetchUrl)
-            .then(response => response.json())
-            .then(data => {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
-                const entries = xmlDoc.getElementsByTagName("entry");
+        // 複数の取得ルート（プロキシ）を用意
+        const proxies = [
+            url => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`,
+            url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+            url => `https://corsproxy.io/?${encodeURIComponent(url)}`
+        ];
 
-                const loading = document.getElementById('loading');
-                const container = document.getElementById('videoContainer');
-                loading.style.display = 'none';
+        async function fetchVideos() {
+            const loading = document.getElementById('loading');
+            const container = document.getElementById('videoContainer');
 
-                // 最新の10件（または存在する件数分）ループ処理
-                const count = Math.min(entries.length, 10);
-                
-                for (let i = 0; i < count; i++) {
-                    const entry = entries[i];
-                    const title = entry.getElementsByTagName("title")[0].textContent;
-                    const videoId = entry.getElementsByTagName("yt:videoId")[0].textContent;
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    const endpoint = proxies[i](rssUrl);
+                    const res = await fetch(endpoint);
+                    
+                    if (!res.ok) continue;
 
-                    const card = document.createElement('div');
-                    card.className = 'video-card';
-                    card.innerHTML = `
-                        <div class="video-title">${title}</div>
-                        <div class="embed-container">
-                            <iframe 
-                                src="https://www.youtube.com/embed/${videoId}" 
-                                title="${title}"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                    `;
-                    container.appendChild(card);
+                    let videos = [];
+
+                    // rss2json (1番目のルート) の場合の処理
+                    if (i === 0) {
+                        const data = await res.json();
+                        if (data.status === 'ok' && data.items) {
+                            videos = data.items.slice(0, 10).map(item => ({
+                                title: item.title,
+                                id: item.link.split('v=')[1]
+                            }));
+                        }
+                    } else {
+                        // XML直取得 (2番目・3番目のルート) の場合の処理
+                        const xmlText = await res.text();
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                        const entries = Array.from(xmlDoc.getElementsByTagName("entry")).slice(0, 10);
+
+                        videos = entries.map(entry => ({
+                            title: entry.getElementsByTagName("title")[0]?.textContent || '',
+                            id: entry.getElementsByTagName("yt:videoId")[0]?.textContent || ''
+                        }));
+                    }
+
+                    if (videos.length > 0) {
+                        loading.style.display = 'none';
+                        renderVideos(videos);
+                        return; // 取得成功したら終了
+                    }
+                } catch (e) {
+                    console.warn(`ルート ${i + 1} 失敗:`, e);
                 }
-            })
-            .catch(error => {
-                console.error(error);
-                document.getElementById('loading').innerText = '動画の読み込みに失敗しました。';
+            }
+
+            loading.innerText = '動画の自動読み込みに失敗しました。時間をおいて再読み込みしてください。';
+        }
+
+        function renderVideos(videos) {
+            const container = document.getElementById('videoContainer');
+            videos.forEach(video => {
+                if (!video.id) return;
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.innerHTML = `
+                    <div class="video-title">${video.title}</div>
+                    <div class="embed-container">
+                        <iframe 
+                            src="https://www.youtube.com/embed/${video.id}" 
+                            title="${video.title}"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                `;
+                container.appendChild(card);
             });
+        }
+
+        fetchVideos();
     </script>
 
 </body>
