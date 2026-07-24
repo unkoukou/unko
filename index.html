@@ -58,7 +58,7 @@
         .video-card {
             background-color: #1a1a24;
             border-radius: 12px;
-            padding: 1rem;
+            padding: 1.2rem;
             border: 1px solid #2d2d3a;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
         }
@@ -98,13 +98,13 @@
 
     <header>
         <h1>加藤純一ロードショー</h1>
-        <p>最新動画10選（自動更新）</p>
+        <p>最新動画 10選（自動更新）</p>
     </header>
 
     <div class="container">
         <h2 class="section-title">📺 最新動画 10選</h2>
 
-        <div id="loading" class="loading">最新動画を読み込み中...</div>
+        <div id="loading" class="loading">最新動画を取得中...</div>
         <div class="video-list" id="videoContainer"></div>
     </div>
 
@@ -113,50 +113,51 @@
     </footer>
 
     <script>
-        // 加藤純一ロードショーのチャンネルID (UCd4f409U0eD17qR4vWpUInA) のRSSフィードを取得
+        // 加藤純一ロードショーのRSSフィードURL
         const channelId = 'UCd4f409U0eD17qR4vWpUInA';
         const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
         
-        // CORS回避用API経由でRSS(XML)を取得
-        const fetchUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+        // CORS回避用プロキシ
+        const fetchUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`;
 
         fetch(fetchUrl)
             .then(response => response.json())
             .then(data => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data.contents, "text/xml");
+                const entries = xmlDoc.getElementsByTagName("entry");
+
                 const loading = document.getElementById('loading');
                 const container = document.getElementById('videoContainer');
                 loading.style.display = 'none';
 
-                if (data.status === 'ok' && data.items) {
-                    // 最新の10件を取得
-                    const items = data.items.slice(0, 10);
-                    
-                    items.forEach(item => {
-                        // URLから動画ID(v=xxxx)を抽出
-                        const videoId = item.link.split('v=')[1];
-                        
-                        const card = document.createElement('div');
-                        card.className = 'video-card';
-                        card.innerHTML = `
-                            <div class="video-title">${item.title}</div>
-                            <div class="embed-container">
-                                <iframe 
-                                    src="https://www.youtube.com/embed/${videoId}" 
-                                    title="${item.title}"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                                </iframe>
-                            </div>
-                        `;
-                        container.appendChild(card);
-                    });
-                } else {
-                    container.innerHTML = '<p style="text-align:center;">動画の読み込みに失敗しました。</p>';
+                // 最新の10件（または存在する件数分）ループ処理
+                const count = Math.min(entries.length, 10);
+                
+                for (let i = 0; i < count; i++) {
+                    const entry = entries[i];
+                    const title = entry.getElementsByTagName("title")[0].textContent;
+                    const videoId = entry.getElementsByTagName("yt:videoId")[0].textContent;
+
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.innerHTML = `
+                        <div class="video-title">${title}</div>
+                        <div class="embed-container">
+                            <iframe 
+                                src="https://www.youtube.com/embed/${videoId}" 
+                                title="${title}"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                    `;
+                    container.appendChild(card);
                 }
             })
             .catch(error => {
                 console.error(error);
-                document.getElementById('loading').innerText = '動画の取得中にエラーが発生しました。';
+                document.getElementById('loading').innerText = '動画の読み込みに失敗しました。';
             });
     </script>
 
